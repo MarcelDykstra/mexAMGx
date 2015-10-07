@@ -1,0 +1,12 @@
+configs
+src/amgx_capi.h
+src/amgx_config.h
+mex_amgx_trunk*
+mex_amgx_proto*
+.logamgx
+*.dll
+*.lib
+*.obj
+*.exp
+*.mexw64
+*.pdf
