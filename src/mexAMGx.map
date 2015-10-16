@@ -1,0 +1,5 @@
+MEX {
+	global:
+		mexFunction;
+		*;
+};

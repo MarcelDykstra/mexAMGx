@@ -1,4 +1,3 @@
-#include <windows.h>
 #include <cuda.h>
 #include <mex.h>
 #include <gpu/mxGPUArray.h>
@@ -6,7 +5,7 @@
 #define EXPORT_FCNS
 #include "mex_export.h"
 
-// In 'amgx_capi.h' define 'AMGX_SAFE_CALL'  in same way
+// In 'amgx_capi.h' define 'AMGX_SAFE_CALL' in same way
 // by copying this '#define', giving proper AMGx error messages
 // in Matlab without seg-faults.
 #define MEX_AMGX_SAFE_CALL(rc) \
@@ -53,8 +52,11 @@ EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str)
   unsigned int buf_len;
   char *buf_cfg_str;
 
+#ifdef _WIN32
   mxInitGPU();
+#endif
 
+#ifdef _WIN32
   lib_handle = amgx_libopen("amgxsh.dll");
   if (lib_handle == NULL) {
     mexErrMsgIdAndTxt("AMGx:LibOpen",
@@ -62,6 +64,14 @@ EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str)
               GetLastError());
     return;
   }
+#else
+  lib_handle = amgx_libopen("./libamgxsh.so");
+  if (lib_handle == NULL) {
+    mexErrMsgIdAndTxt("AMGx:LibOpen",
+      "AMGx: ERROR: failed loading: %s\n", dlerror());
+    return;
+  }
+#endif
 
   // Load all the dynamic link library routines.
   if (amgx_liblink_all(lib_handle) == 0) {

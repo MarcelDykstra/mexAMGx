@@ -20,7 +20,7 @@ if strcmpi(computer('arch'), 'win32') || strcmpi(computer('arch'), 'win64')
 elseif strcmpi(computer('arch'), 'glnxa64')
   setenv('MW_NVCC_PATH','/opt/cuda/bin')
   mex mex_amgx.cu -largeArrayDims -outdir ../ ...
-  -I/opt/cuda/include -I. -L/opt/cuda/lib64 -lcublas -lcusparse -lcudart
+  -I/opt/cuda/include -I. -L/opt/cuda/lib64 -lcublas -lcusparse -lcudart -ldl
   cd ..
   warn = warning('off', 'all');
   loadlibrary('mex_amgx','src/mex_amgx.h', 'mfilename', 'mex_amgx_proto')
