@@ -1,5 +1,4 @@
 clear all; clc;
-validate_path = fileparts(which('test_mex_amgx'));
 curr_path = pwd; cd ..; addpath(pwd); cd(curr_path);
 
 objAMGx = mexAMGx('W.json');
