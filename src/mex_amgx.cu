@@ -5,9 +5,6 @@
 #define EXPORT_FCNS
 #include "mex_export.h"
 
-// In 'amgx_capi.h' define 'AMGX_SAFE_CALL' in same way
-// by copying this '#define', giving proper AMGx error messages
-// in Matlab without seg-faults.
 #define MEX_AMGX_SAFE_CALL(rc) \
 { \
   AMGX_RC err;     \

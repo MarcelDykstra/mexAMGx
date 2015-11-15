@@ -1,6 +1,9 @@
 classdef mexAMGx < handle
+  properties (Access = private)
+    x_initial = [];
+  end
   methods
-    function self = mexAMGx(conf_str)
+    function self = mexAMGx(A, conf_str)
       warn = warning('off', 'all');
       amgx_path = fileparts(which('mexAMGx'));
       curr_path = pwd; cd(amgx_path);
@@ -9,33 +12,24 @@ classdef mexAMGx < handle
       calllib('mex_amgx', 'mexAMGxInitialize', ...
         fullfile(amgx_path, 'configs', conf_str));
       cd(curr_path);
-    end
-    function matrixUploadA(self, A)
       calllib('mex_amgx', 'mexAMGxMatrixUploadA', A');
-    end
-    function matrixReplaceCoeffA(self, A)
-      calllib('mex_amgx', 'mexAMGxMatrixReplaceCoeffA', A');
-    end
-    function vectorUploadX(self, x)
-      calllib('mex_amgx', 'mexAMGxVectorUploadX', x);
-    end
-    function vectorUploadB(self, b)
-      calllib('mex_amgx', 'mexAMGxVectorUploadB', b);
-    end
-    function vectorSetZeroX(self)
-      calllib('mex_amgx', 'mexAMGxVectorSetZeroX');
-    end
-    function x = vectorDownloadX(self)
-      x = calllib('mex_amgx', 'mexAMGxVectorDownloadX');
-    end
-    function readSystem(self)
-      calllib('mex_amgx', 'mexAMGxReadSystem');
-    end
-    function solverSetup(self)
       calllib('mex_amgx', 'mexAMGxSolverSetup');
     end
-    function solverSolve(self)
+    function x = mldivide(self, b)
+      calllib('mex_amgx', 'mexAMGxVectorUploadB', b);
+      if isempty(self.x_initial)
+        calllib('mex_amgx', 'mexAMGxVectorSetZeroX');
+      else
+        calllib('mex_amgx', 'mexAMGxVectorUploadX', self.x_initial);
+      end
       calllib('mex_amgx', 'mexAMGxSolverSolve');
+      x = calllib('mex_amgx', 'mexAMGxVectorDownloadX');
+    end
+    function replace(self, A)
+      calllib('mex_amgx', 'mexAMGxMatrixReplaceCoeffA', A');
+    end
+    function initial(self, x)
+      self.x_initial = x;
     end
     function delete(self)
       disp('mexAMGx: finalize');
