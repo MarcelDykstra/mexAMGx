@@ -38,7 +38,8 @@ AMGX_Mode mode;
 AMGX_config_handle cfg;
 AMGX_resources_handle rsrc;
 AMGX_matrix_handle A;
-AMGX_vector_handle b, x;
+AMGX_vector_handle b;
+AMGX_vector_handle x = NULL;
 AMGX_solver_handle solver;
 
 //------------------------------------------------------------------------------
@@ -221,7 +222,7 @@ EXPORTED_FUNCTION void mexAMGxVectorSetZeroX(void)
 {
   int n, block_dim;
 
-  // TODO: Vector might not exist yet.
+  if (x == NULL) return;
   MEX_AMGX_SAFE_CALL(AMGX_vector_get_size(x, &n, &block_dim));
   MEX_AMGX_SAFE_CALL(AMGX_vector_set_zero(x, n, block_dim));
 }
