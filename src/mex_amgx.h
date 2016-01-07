@@ -6,7 +6,8 @@
 extern "C" {
 #endif
 
-EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str);
+EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str,
+                                         boolean is_file);
 EXPORTED_FUNCTION void mexAMGxFinalize(void);
 
 EXPORTED_FUNCTION void mexAMGxMatrixUploadA(const mxArray *mxA);

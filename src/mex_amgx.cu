@@ -43,7 +43,8 @@ AMGX_vector_handle x = NULL;
 AMGX_solver_handle solver;
 
 //------------------------------------------------------------------------------
-EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str)
+EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str,
+                                         boolean is_file)
 {
   int major, minor;
   char *ver, *date, *time;
@@ -101,8 +102,14 @@ EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str)
   buf_cfg_str = (char *) mxMalloc(buf_len);
   mxGetString(cfg_str, buf_cfg_str, (mwSize)buf_len);
 
-  MEX_AMGX_SAFE_CALL(AMGX_config_create_from_file(&cfg,
-                 buf_cfg_str));
+  if (is_file == TRUE) {
+    MEX_AMGX_SAFE_CALL(AMGX_config_create_from_file(&cfg,
+                   buf_cfg_str));
+  }
+  else {
+    MEX_AMGX_SAFE_CALL(AMGX_config_create(&cfg,
+                   buf_cfg_str));
+  }
 
   // Create resources, matrix, vector and solver.
   MEX_AMGX_SAFE_CALL(AMGX_resources_create_simple(&rsrc, cfg));
