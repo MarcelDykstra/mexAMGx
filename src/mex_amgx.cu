@@ -1,5 +1,6 @@
 #include <cuda.h>
 #include <mex.h>
+#include <stdbool.h>
 #include <gpu/mxGPUArray.h>
 #include "amgx_capi.h"
 #define EXPORT_FCNS
@@ -102,7 +103,7 @@ EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str,
   buf_cfg_str = (char *) mxMalloc(buf_len);
   mxGetString(cfg_str, buf_cfg_str, (mwSize)buf_len);
 
-  if (is_file == TRUE) {
+  if (is_file) {
     MEX_AMGX_SAFE_CALL(AMGX_config_create_from_file(&cfg,
                    buf_cfg_str));
   }
