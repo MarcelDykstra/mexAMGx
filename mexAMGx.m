@@ -7,18 +7,17 @@ classdef mexAMGx < handle
       warn = warning('off', 'all');
       loadlibrary('mex_amgx', @mex_amgx_proto);
       warning(warn);
+      amgx_path = fileparts(which('mexAMGx'));
+      curr_path = pwd; cd(amgx_path);
       if isstruct(cfg)
         cfg_str = self.parse_json(cfg);
         calllib('mex_amgx', 'mexAMGxInitialize', ...
           cfg_str, false);
       else
-        amgx_path = fileparts(which('mexAMGx'));
-        curr_path = pwd; cd(amgx_path);
-
         calllib('mex_amgx', 'mexAMGxInitialize', ...
           fullfile(amgx_path, 'configs', cfg), true);
-        cd(curr_path);
       end
+      cd(curr_path);
       calllib('mex_amgx', 'mexAMGxMatrixUploadA', A');
       calllib('mex_amgx', 'mexAMGxSolverSetup');
     end
@@ -44,17 +43,18 @@ classdef mexAMGx < handle
       unloadlibrary('mex_amgx');
     end
   end
-  methods (Access = private, Static)
-    function str = parse_json(cfg, varargin)
+  methods (Access = private)
+    function str = parse_json(self, cfg, varargin)
 
       flds = fields(cfg);
-      if nargin > 1,  str = []; else str = '{'; end
+      if nargin > 2,  str = []; else str = '{'; end
 
       for flds_cnt = 1:length(flds)
         if flds_cnt == 1, str = [str '"']; else str = [str ', "']; end
         str = [str flds{flds_cnt} '" : '];
         if isstruct(getfield(cfg, flds{flds_cnt}))
-          str = [str '{' parse_json(getfield(cfg, flds{flds_cnt}), true) '}'];
+          str = [str '{' self.parse_json(getfield(cfg, ...
+                  flds{flds_cnt}), true) '}'];
         elseif isnumeric(getfield(cfg, flds{flds_cnt}))
           str = [str num2str(getfield(cfg, flds{flds_cnt}))];
         else
@@ -62,7 +62,7 @@ classdef mexAMGx < handle
         end
       end
 
-      if nargin == 1,  str = [str '}']; end
+      if nargin == 2,  str = [str '}']; end
     end
   end
 end

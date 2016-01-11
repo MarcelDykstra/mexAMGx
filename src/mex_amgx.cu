@@ -44,7 +44,7 @@ AMGX_solver_handle solver;
 
 //------------------------------------------------------------------------------
 EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str,
-                                         boolean is_file)
+                                         bool is_file)
 {
   int major, minor;
   char *ver, *date, *time;
