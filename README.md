@@ -39,15 +39,17 @@ messages in Matlab without seg-faults:
 #define AMGX_SAFE_CALL(rc) \
 { \
   AMGX_RC err;     \
-  char msg[4096];   \
+  char amg_msg[4096]; \
+  char err_msg[4096];   \
   switch(err = (rc)) {    \
   case AMGX_RC_OK: \
     break; \
   default: \
-    AMGX_get_error_string(err, msg, 4096); \
-    mexErrMsgIdAndTxt("AMGx:SafeCall", "AMGx: ERROR: %s\n " \
-                      "file %s line %6d\nCUDA: LAST ERROR: %s\n", \
-      msg, __FILE__, __LINE__, cudaGetErrorString(cudaGetLastError())); \
+    AMGX_get_error_string(err, amg_msg, 4096); \
+    sprintf(err_msg, "AMGx: ERROR: %s\n " \
+      "file %s line %6d\nCUDA: LAST ERROR: %s\n", \
+      amg_msg, __FILE__, __LINE__, cudaGetErrorString(cudaGetLastError())); \
+    mexErrMsgIdAndTxt("AMGx:SafeCall", err_msg); \
     AMGX_abort(NULL, 1); \
     break; \
   } \
