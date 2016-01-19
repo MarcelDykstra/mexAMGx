@@ -1,6 +1,7 @@
 #include <cuda.h>
 #include <mex.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <gpu/mxGPUArray.h>
 #include "amgx_capi.h"
 #define EXPORT_FCNS
