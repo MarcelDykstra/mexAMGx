@@ -30,11 +30,12 @@
 extern "C" {
 #endif
 
-void print_callback(const char *msg, int length);
+void print_amgx(const char *msg, int length);
 
 //------------------------------------------------------------------------------
 // Status handling.
 AMGX_SOLVE_STATUS status;
+bool is_verbose;
 
 // Library handles.
 void *lib_handle;
@@ -48,12 +49,14 @@ AMGX_solver_handle solver;
 
 //------------------------------------------------------------------------------
 EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str,
-                                         bool is_file)
+                                         bool is_file, bool is_set_verbose)
 {
   int major, minor;
   char *ver, *date, *time;
   unsigned int buf_len;
   char *buf_cfg_str;
+
+  is_verbose = is_set_verbose;
 
 #ifdef _WIN32
   mxInitGPU();
@@ -88,15 +91,16 @@ EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str,
   MEX_AMGX_SAFE_CALL(AMGX_initialize_plugins());
 
   // System.
-  MEX_AMGX_SAFE_CALL(AMGX_register_print_callback(&print_callback));
+  MEX_AMGX_SAFE_CALL(AMGX_register_print_callback(&print_amgx));
   MEX_AMGX_SAFE_CALL(AMGX_install_signal_handler());
 
   // Get API and build info.
   AMGX_get_api_version(&major, &minor);
-  mexPrintf("AMGx: API version: %d.%d\n", major, minor);
+  if (is_verbose) mexPrintf("AMGx: API version: %d.%d\n", major, minor);
   AMGX_get_build_info_strings(&ver, &date, &time);
-  mexPrintf("AMGx: build version: %s\nAMGx: build date and time: %s %s\n",
-            ver, date, time);
+  if (is_verbose) mexPrintf("AMGx: build version: %s\nAMGx: " \
+                            "build date and time: %s %s\n",
+                            ver, date, time);
 
   // Set mode.
   mode = AMGX_mode_dDDI;
@@ -146,7 +150,7 @@ EXPORTED_FUNCTION void mexAMGxMatrixUploadA(const mxArray *mxA)
   jc = mxGetJc(mxA);
   ir = mxGetIr(mxA);
   pr = mxGetPr(mxA);
-  nnz = jc[n];
+  nnz = (int) jc[n];
 
   // Cast array from 'mwIndex' to 'int'.
   amgx_jc = new int[n + 1];
@@ -289,8 +293,8 @@ EXPORTED_FUNCTION void mexAMGxFinalize(void)
 }
 
 //------------------------------------------------------------------------------
-void print_callback(const char *msg, int length){
-  mexPrintf("AMGx: %s", msg);
+void print_amgx(const char *msg, int length){
+  if (is_verbose) mexPrintf("AMGx: %s", msg);
 }
 
 //------------------------------------------------------------------------------

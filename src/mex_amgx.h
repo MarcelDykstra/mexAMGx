@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 EXPORTED_FUNCTION void mexAMGxInitialize(const mxArray *cfg_str,
-                                         bool is_file);
+                                         bool is_file, bool is_set_verbose);
 EXPORTED_FUNCTION void mexAMGxFinalize(void);
 
 EXPORTED_FUNCTION void mexAMGxMatrixUploadA(const mxArray *mxA);

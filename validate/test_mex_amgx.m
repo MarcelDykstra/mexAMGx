@@ -1,7 +1,7 @@
 clear all; clc;
 curr_path = pwd; cd ..; addpath(pwd); cd(curr_path);
 
-load matrix; num_rows = size(M, 1);
+load matrix; num_rows = size(A, 1);
 
 cfg.config_version = 2;
 cfg.solver.preconditioner.print_grid_stats = 1;
@@ -30,20 +30,23 @@ cfg.solver.scope = 'main';
 cfg.solver.tolerance = 1e-6;
 cfg.solver.norm = 'L2';
 
-amgA = mexAMGx(M, cfg);
-% amgA = mexAMGx(M, 'PCG_F.json');
-amgA.replace(M);
+amgA = mexAMGx(A, cfg);
+% amgA = mexAMGx(A, 'PCG_F.json');
+amgA.replace(A);
 
 x = ones(num_rows, 1);
 amgA.initial(x);
 
 b = ones(num_rows, 1);
+
+tic_amgx = tic;
 xx = amgA \ b;
+disp(['[t_amgx: ' num2str(toc(tic_amgx)) ']']);
 
 tic_matlab = tic;
-xm = M \ b;
+xm = A \ b;
 disp(['[t_matlab: ' num2str(toc(tic_matlab)) ']']);
 
-disp(['Matlab: [norm_residual: ' num2str(norm(M * xm - b)) ']']);
-disp(['AMGx: [norm_residual: ' num2str(norm(M * xx - b)) ']']);
+disp(['Matlab: [norm_residual: ' num2str(norm(A * xm - b)) ']']);
+disp(['AMGx: [norm_residual: ' num2str(norm(A * xx - b)) ']']);
 clear amgA;

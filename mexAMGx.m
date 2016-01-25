@@ -3,7 +3,8 @@ classdef mexAMGx < handle
     x_initial = [];
   end
   methods
-    function self = mexAMGx(A, cfg)
+    function self = mexAMGx(A, cfg, is_verbose)
+      if nargin < 3, is_verbose = false; end;
       warn = warning('off', 'all');
       loadlibrary('mex_amgx', @mex_amgx_proto);
       warning(warn);
@@ -12,10 +13,10 @@ classdef mexAMGx < handle
       if isstruct(cfg)
         cfg_str = self.parse_json(cfg);
         calllib('mex_amgx', 'mexAMGxInitialize', ...
-          cfg_str, false);
+          cfg_str, false, is_verbose);
       else
         calllib('mex_amgx', 'mexAMGxInitialize', ...
-          fullfile(amgx_path, 'configs', cfg), true);
+          fullfile(amgx_path, 'configs', cfg), true, is_verbose);
       end
       cd(curr_path);
       calllib('mex_amgx', 'mexAMGxMatrixUploadA', A');
@@ -38,7 +39,6 @@ classdef mexAMGx < handle
       self.x_initial = x;
     end
     function delete(self)
-      disp('mexAMGx: finalize');
       calllib('mex_amgx','mexAMGxFinalize');
       unloadlibrary('mex_amgx');
     end
