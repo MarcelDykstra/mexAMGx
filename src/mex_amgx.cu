@@ -144,7 +144,7 @@ EXPORTED_FUNCTION void mexAMGxMatrixUploadA(const mxArray *mxA)
   if (!mxIsSparse(mxA) || mxGetN(mxA) != mxGetM(mxA) ||
       n == 0 || mxIsComplex(mxA) || !mxIsDouble(mxA)) {
     mexErrMsgIdAndTxt("mexAMGx:mexAMGxMatrixUpload",
-                      "mexAMGx: ERROR: bad matrix.");
+                      "mexAMGx: ERROR: Matrix dimensions and type must agree.");
   }
 
   jc = mxGetJc(mxA);
@@ -186,7 +186,7 @@ EXPORTED_FUNCTION void mexAMGxMatrixReplaceCoeffA(const mxArray *mxA)
   if (!mxIsSparse(mxA) || mxGetN(mxA) != mxGetM(mxA) ||
       n == 0 || mxIsComplex(mxA) || !mxIsDouble(mxA)) {
     mexErrMsgIdAndTxt("mexAMGx:mexAMGxMatrixReplaceCoeff",
-                      "mexAMGx: ERROR: bad matrix.");
+                      "mexAMGx: ERROR: Matrix dimensions and type must agree.");
   }
 
   jc = mxGetJc(mxA);
@@ -206,7 +206,7 @@ EXPORTED_FUNCTION void mexAMGxVectorUploadX(const mxArray *mxX)
   if (mxIsSparse(mxX) || mxGetN(mxX) != 1 || n == 0 || mxIsComplex(mxX) ||
       !mxIsDouble(mxX)) {
     mexErrMsgIdAndTxt("mexAMGx:mexAMGxVectorUploadX",
-                      "mexAMGx: ERROR: bad vector.");
+                      "mexAMGx: ERROR: Vector dimensions and type must agree.");
   }
 
   pr = mxGetPr(mxX);
@@ -224,7 +224,7 @@ EXPORTED_FUNCTION void mexAMGxVectorUploadB(const mxArray *mxB)
   if (mxIsSparse(mxB) || mxGetN(mxB) != 1 || n == 0 || mxIsComplex(mxB) ||
       !mxIsDouble(mxB)) {
     mexErrMsgIdAndTxt("mexAMGx:mexAMGxVectorUploadX",
-                      "mexAMGx: ERROR: bad vector.");
+                      "mexAMGx: ERROR: Vector dimensions and type must agree.");
   }
 
   pr = mxGetPr(mxB);
@@ -269,6 +269,27 @@ EXPORTED_FUNCTION void mexAMGxSolverSolve(void)
 {
   // Solver solve.
   MEX_AMGX_SAFE_CALL(AMGX_solver_solve(solver, b, x));
+}
+
+//------------------------------------------------------------------------------
+EXPORTED_FUNCTION mxArray *mexAMGxResidualDownload(void)
+{
+  int n;
+  AMGX_RC rc;
+  double *data;
+  mxArray *mxR;
+
+  MEX_AMGX_SAFE_CALL(AMGX_solver_get_iterations_number(solver, &n));
+  mxR = mxCreateNumericMatrix(n, 1, mxDOUBLE_CLASS, mxREAL);
+  data = (double *) mxMalloc(n * sizeof(double));
+
+  for (int j = 0; j < n; j++) {
+    rc = AMGX_solver_get_iteration_residual(solver,
+                       j, 0, &data[j]);
+    if (data[j] != -1) MEX_AMGX_SAFE_CALL(rc);
+  }
+  mxSetPr(mxR, data);
+  return mxR;
 }
 
 //------------------------------------------------------------------------------

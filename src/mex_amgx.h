@@ -20,6 +20,8 @@ EXPORTED_FUNCTION mxArray *mexAMGxVectorDownloadX(void);
 EXPORTED_FUNCTION void mexAMGxSolverSetup(void);
 EXPORTED_FUNCTION void mexAMGxSolverSolve(void);
 
+EXPORTED_FUNCTION mxArray *mexAMGxResidualDownload(void);
+
 EXPORTED_FUNCTION void mexFunction(int nlhs, mxArray *plhs[],
                                    int nrhs, const mxArray *prhs[]);
 

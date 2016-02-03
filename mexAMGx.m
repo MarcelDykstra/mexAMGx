@@ -38,6 +38,14 @@ classdef mexAMGx < handle
     function initial(self, x)
       self.x_initial = x;
     end
+    function r = residual(self)
+      r = calllib('mex_amgx', 'mexAMGxResidualDownload');
+      if (r(1) == -1)
+        warning('mexAMGx:residual', ...
+          'Set "store_res_history" in configuration of outer solver.');
+        r = [];
+      end
+    end
     function delete(self)
       calllib('mex_amgx','mexAMGxFinalize');
       unloadlibrary('mex_amgx');
