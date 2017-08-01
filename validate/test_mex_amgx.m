@@ -47,8 +47,8 @@ disp(['AMGx: [norm_residual: ' num2str(norm(A * xx - b)) ']']);
 
 r = amgA.residual;
 if ~isempty(r)
-  figure; semilogy(r);
-  grid on; box on; xlabel('iteration'); ylabel('rel. residual');
+    figure; semilogy(r);
+    grid on; box on; xlabel('iteration'); ylabel('rel. residual');
 end
 
 clear amgA;
